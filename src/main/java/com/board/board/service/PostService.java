@@ -16,7 +16,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public PostResponse createPost(PostCreateRequest request){
+    public PostResponse createPost(PostCreateRequest request) {
 
         User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -29,6 +29,17 @@ public class PostService {
         Post savedPost = postRepository.save(post);
 
         return toResponse(savedPost);
+    }
+
+        private PostResponse toResponse(Post post){
+            PostResponse response = new PostResponse();
+            response.setId(post.getId());
+            response.setTitle(post.getTitle());
+            response.setContent(post.getViewCount());
+            response.setViewCount(post.getViewCount());
+            response.setUsername(post.getUser().getUsername());
+            return response;
+        }
 
     }
 
