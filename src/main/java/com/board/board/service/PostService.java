@@ -35,12 +35,21 @@ public class PostService {
             PostResponse response = new PostResponse();
             response.setId(post.getId());
             response.setTitle(post.getTitle());
-            response.setContent(post.getViewCount());
+            response.setContent(post.getContent());
             response.setViewCount(post.getViewCount());
             response.setUsername(post.getUser().getUsername());
             return response;
         }
 
-    }
+    public PostResponse getPost(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() ->new RuntimeException("post not found"));
 
+        post.setViewCount(post.getViewCount() + 1);
+        Post updated = postRepository.save(post);
+
+        return toResponse(updated);
+    }
 }
+
+
