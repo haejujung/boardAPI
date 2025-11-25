@@ -2,12 +2,15 @@ package com.board.board.service;
 
 import com.board.board.dto.PostCreateRequest;
 import com.board.board.dto.PostResponse;
+import com.board.board.dto.PostUpdateRequest;
 import com.board.board.model.Post;
 import com.board.board.model.User;
 import com.board.board.repository.PostRepository;
 import com.board.board.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +40,7 @@ public class PostService {
             response.setTitle(post.getTitle());
             response.setContent(post.getContent());
             response.setViewCount(post.getViewCount());
+            response.setCreatedAt(post.getCreatedAt());
             response.setUsername(post.getUser().getUsername());
             return response;
         }
@@ -50,6 +54,35 @@ public class PostService {
 
         return toResponse(updated);
     }
+
+    public PostResponse updatePost(Long id, PostUpdateRequest request){
+
+        Post post = postRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Post not found"));
+
+        post.setTitle((request.getTitle()));
+        post.setContent((request.getContent()));
+
+        Post updated = postRepository.save(post);
+        return toResponse(updated);
+    }
+
+    public List<PostResponse> getAllPosts(){
+        List<Post> posts = postRepository.findAll();
+
+        return posts.stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    public void deletePost(Long id){
+        if(!postRepository.existsById(id)){
+            throw  new RuntimeException(("Post not found"));
+        }
+        postRepository.deleteById(id);
+    }
+
+
 }
 
 
