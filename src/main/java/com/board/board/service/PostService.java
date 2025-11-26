@@ -8,6 +8,8 @@ import com.board.board.model.User;
 import com.board.board.repository.PostRepository;
 import com.board.board.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +23,11 @@ public class PostService {
 
     public PostResponse createPost(PostCreateRequest request) {
 
-        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(()-> new RuntimeException("User not found"));
 
         Post post = new Post();
         post.setUser(user);
@@ -57,8 +63,15 @@ public class PostService {
 
     public PostResponse updatePost(Long id, PostUpdateRequest request){
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
         Post post = postRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("Post not found"));
+
+        if(!post.getUser().getUsername().equals(username)){
+            throw new RuntimeException("수정 권한 없음");
+        }
 
         post.setTitle((request.getTitle()));
         post.setContent((request.getContent()));
@@ -76,10 +89,17 @@ public class PostService {
     }
 
     public void deletePost(Long id){
-        if(!postRepository.existsById(id)){
-            throw  new RuntimeException(("Post not found"));
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        Post post = postRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("post not found"));
+
+        if(!post.getUser().getUsername().equals(username)){
+            throw  new RuntimeException("삭제 권한 없음");
         }
-        postRepository.deleteById(id);
+        postRepository.delete(post);
     }
 
 
