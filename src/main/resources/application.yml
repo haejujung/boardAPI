@@ -1,3 +1,5 @@
+jwt:
+  secret: mysecretkey123456789
 spring:
   devtools:
     restart:

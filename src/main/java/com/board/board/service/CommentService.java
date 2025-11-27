@@ -10,6 +10,8 @@ import com.board.board.repository.CommentRepository;
 import com.board.board.repository.PostRepository;
 import com.board.board.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +26,10 @@ public class CommentService {
 
     public CommentResponse createComment(CommentCreateRequest request) {
 
-        User user = userRepository.findById(request.getUserId())
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Post post = postRepository.findById(request.getPostId())
@@ -46,6 +51,7 @@ public class CommentService {
         CommentResponse response = new CommentResponse();
         response.setId(comment.getId());
         response.setUsername(comment.getUser().getUsername());
+        response.setPostId(comment.getPost().getId());
         response.setContent(comment.getContent());
         response.setCreatedAt(comment.getCreatedAt());
         return response;
@@ -65,18 +71,48 @@ public class CommentService {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("Comment not found"));
 
-        comment.setContent((request.getContent()));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
 
+        if(!comment.getUser().getUsername().equals(username)){
+            throw new RuntimeException("작성자만 수정할 수 있습니다");
+        }
+
+
+        comment.setContent((request.getContent()));
         Comment updated = commentRepository.save(comment);
 
         return  toResponse(updated);
     }
 
     public void deleteComment(Long id){
-        if(!commentRepository.existsById(id)){
-            throw new RuntimeException("Comment not found");
+
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Comment not found"));
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+
+        if(!comment.getUser().getUsername().equals(username)){
+            throw new RuntimeException("작성자만 삭제할 수 있습니다");
         }
+
+
         commentRepository.deleteById(id);
     }
+
+    public List<CommentResponse> getComments(Long postId){
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()-> new RuntimeException("Post not found"));
+
+        List<Comment> comments = post.getComments();
+
+        return comments.stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+
 }
 
