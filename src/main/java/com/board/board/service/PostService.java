@@ -3,6 +3,7 @@ package com.board.board.service;
 import com.board.board.dto.PostCreateRequest;
 import com.board.board.dto.PostResponse;
 import com.board.board.dto.PostUpdateRequest;
+import com.board.board.exception.NoPermissionException;
 import com.board.board.model.Post;
 import com.board.board.model.PostLike;
 import com.board.board.model.User;
@@ -81,7 +82,7 @@ public class PostService {
                 .orElseThrow(()-> new RuntimeException("Post not found"));
 
         if(!post.getUser().getUsername().equals(username)){
-            throw new RuntimeException("수정 권한 없음");
+            throw new NoPermissionException("수정 권한 없음");
         }
 
         post.setTitle((request.getTitle()));
@@ -108,7 +109,7 @@ public class PostService {
                 .orElseThrow(()-> new RuntimeException("post not found"));
 
         if(!post.getUser().getUsername().equals(username)){
-            throw  new RuntimeException("삭제 권한 없음");
+            throw  new NoPermissionException("삭제 권한 없음");
         }
         postRepository.delete(post);
     }
