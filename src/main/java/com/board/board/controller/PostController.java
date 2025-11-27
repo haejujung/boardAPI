@@ -43,4 +43,9 @@ public class PostController {
         postService.deletePost(id);
         return "deleted";
     }
+
+    @PostMapping("/{postId}/like")
+    public String likePost(@PathVariable Long postId){
+        return postService.likePost(postId);
+    }
 }

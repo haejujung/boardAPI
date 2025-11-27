@@ -4,7 +4,9 @@ import com.board.board.dto.PostCreateRequest;
 import com.board.board.dto.PostResponse;
 import com.board.board.dto.PostUpdateRequest;
 import com.board.board.model.Post;
+import com.board.board.model.PostLike;
 import com.board.board.model.User;
+import com.board.board.repository.PostLikeRepository;
 import com.board.board.repository.PostRepository;
 import com.board.board.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +15,22 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PostService {
 
+    private final PostLikeRepository postLikeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    
+    private User getLoginUser(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(()-> new RuntimeException("유저가 존재하지 않습니다"));
+        
+    }
 
     public PostResponse createPost(PostCreateRequest request) {
 
@@ -100,6 +111,28 @@ public class PostService {
             throw  new RuntimeException("삭제 권한 없음");
         }
         postRepository.delete(post);
+    }
+
+    public String likePost(Long postId){
+
+        User loginUser = getLoginUser();
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()-> new RuntimeException("게시글이 존재하지 않습니다"));
+
+        Optional<PostLike> existingLike = postLikeRepository.findByPostAndUser(post,loginUser);
+
+        if(existingLike.isPresent()){
+            postLikeRepository.delete(existingLike.get());
+            return "unliked";
+
+        } else {
+            PostLike like = new PostLike();
+            like.setPost(post);
+            like.setUser(loginUser);
+            postLikeRepository.save(like);
+            return "liked";
+        }
     }
 
 

@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()   // 로그인, 회원가입
-                        .requestMatchers("/post/**").permitAll()   // 게시글 조회, 상세조회 허용
+                        .requestMatchers("/post/*like").permitAll()   // 게시글 조회, 상세조회 허용
                         .requestMatchers("/comment/**").permitAll()   // ⬅️ 회원가입/로그인 허용
                         .requestMatchers("/comment/post/**").permitAll()   // ⬅️ 회원가입/로그인 허용
                         .anyRequest().authenticated()
