@@ -21,10 +21,16 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()   // 로그인, 회원가입
                         .requestMatchers("/post/*like").permitAll()   // 게시글 조회, 상세조회 허용
                         .requestMatchers("/comment/**").permitAll()   // ⬅️ 회원가입/로그인 허용
                         .requestMatchers("/comment/post/**").permitAll()   // ⬅️ 회원가입/로그인 허용
+                        .requestMatchers("/v3/api-docs.yaml").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
+                        .requestMatchers("/swagger-resources/**").permitAll()
+                        .requestMatchers("/configuration/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

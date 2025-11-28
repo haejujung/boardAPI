@@ -27,6 +27,18 @@ public class JwtFilter extends OncePerRequestFilter {
                                      FilterChain filterChain)
         throws ServletException, IOException{
 
+        String path = request.getRequestURI();
+
+        //  Swagger 및 static 리소스는 토큰 검사 제외
+        if (path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.startsWith("/swagger-resources")
+                || path.startsWith("/webjars/")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String header = request.getHeader("Authorization");
 
         if(header != null && header.startsWith("Bearer ")){
