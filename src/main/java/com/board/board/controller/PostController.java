@@ -4,6 +4,7 @@ import com.board.board.dto.PostCreateRequest;
 import com.board.board.dto.PostResponse;
 import com.board.board.dto.PostUpdateRequest;
 import com.board.board.service.PostService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +18,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public PostResponse createPost(@RequestBody PostCreateRequest request){
-
+    public PostResponse createPost(@Valid @RequestBody PostCreateRequest request){
         return postService.createPost(request);
     }
 
