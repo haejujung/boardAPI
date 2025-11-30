@@ -1,5 +1,5 @@
 jwt:
-  secret: mysecretkey123456789
+  secret: springbootprojectsecretkeyjwt123456
 spring:
   devtools:
     restart:

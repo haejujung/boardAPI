@@ -1,6 +1,7 @@
 package com.board.board.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,14 +22,16 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String content;
 
+    @JsonBackReference(value = "user-comment")
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
+    @JsonBackReference(value = "post-comment")
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
@@ -39,6 +42,8 @@ public class Comment {
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+
 
 
 
