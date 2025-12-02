@@ -6,6 +6,7 @@ import com.board.board.dto.PostUpdateRequest;
 import com.board.board.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,8 +35,11 @@ public class PostController {
     }
 
     @GetMapping
-    public List<PostResponse> getAllPosts(){
-        return postService.getAllPosts();
+    public Page<PostResponse> getAllPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return postService.getPostList(page,size);
     }
 
     @DeleteMapping("/{id}")
@@ -48,4 +52,6 @@ public class PostController {
     public String likePost(@PathVariable Long postId){
         return postService.likePost(postId);
     }
+
+
 }

@@ -11,6 +11,10 @@ import com.board.board.repository.PostLikeRepository;
 import com.board.board.repository.PostRepository;
 import com.board.board.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -134,6 +138,13 @@ public class PostService {
             postLikeRepository.save(like);
             return "liked";
         }
+    }
+
+    public Page<PostResponse> getPostList(int page, int size){
+        Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
+        Page<Post> postPage = postRepository.findAll(pageable);
+
+        return postPage.map(PostResponse::fromEntity);
     }
 
 
