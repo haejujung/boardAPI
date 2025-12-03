@@ -53,5 +53,14 @@ public class PostController {
         return postService.likePost(postId);
     }
 
+    @GetMapping("/search")
+    public Page<PostResponse> search(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return postService.searchPost(keyword,page,size);
+    }
+
 
 }

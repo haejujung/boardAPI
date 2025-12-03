@@ -147,6 +147,13 @@ public class PostService {
         return postPage.map(PostResponse::fromEntity);
     }
 
+    public Page<PostResponse> searchPost(String keyword, int page,int size){
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Post> posts = postRepository.findByTitleContainingOrContentContaining(keyword,keyword,pageable);
+
+        return posts.map(PostResponse::fromEntity);
+    }
 
 }
 

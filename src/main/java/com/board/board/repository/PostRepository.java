@@ -9,4 +9,6 @@ public interface PostRepository extends JpaRepository<Post,Long> {
 
     @Override
     Page<Post> findAll(Pageable pageable);
+
+    Page<Post> findByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
 }
