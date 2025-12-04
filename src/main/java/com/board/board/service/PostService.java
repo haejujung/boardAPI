@@ -140,7 +140,23 @@ public class PostService {
         }
     }
 
-    public Page<PostResponse> getPostList(int page, int size){
+    public Page<PostResponse> getPostList(int page, int size, String sort){
+        Sort sortOption;
+
+        switch (sort) {
+            case "views":
+                sortOption = Sort.by(Sort.Direction.DESC, "viewCount");
+                break;
+
+            case "likes":
+                sortOption = Sort.by(Sort.Direction.DESC, "likeCount");
+                break;
+
+            case "latest":
+            default:
+                sortOption = Sort.by(Sort.Direction.DESC, "createdAt");
+                break;
+        }
         Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
         Page<Post> postPage = postRepository.findAll(pageable);
 

@@ -37,9 +37,11 @@ public class PostController {
     @GetMapping
     public Page<PostResponse> getAllPosts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "latest") String sort
+
     ){
-        return postService.getPostList(page,size);
+        return postService.getPostList(page,size,sort);
     }
 
     @DeleteMapping("/{id}")
